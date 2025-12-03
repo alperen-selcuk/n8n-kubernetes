@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: postgres-config
+  labels:
+    app: postgres
+data:
+  POSTGRES_DB: n8n
+  POSTGRES_USER: n8n
+  POSTGRES_PASSWORD: PasdN1831c!*n
