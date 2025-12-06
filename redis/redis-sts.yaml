@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: redis
+  namespace: n8n
 spec:
   serviceName: "redis"
   replicas: 1
