@@ -4,7 +4,7 @@
 [![Kubernetes](https://img.shields.io/badge/Kubernetes-Production%20Ready-blue?style=for-the-badge&logo=kubernetes)](https://kubernetes.io)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
-Bu proje, **n8n workflow automation tool**'unu Kubernetes üzerinde, **scalable ve production-ready** bir yapıda (Main + Worker) deploy etmek için gerekli konfigürasyon dosyalarını içerir. Infrastructure olarak database için PostgreSQL ve queue management için Redis kullanılmaktadır.
+A comprehensive Kubernetes deployment configuration for **n8n workflow automation platform** with a scalable architecture (Main + Worker model). This setup uses **PostgreSQL** for data persistence and **Redis** for queue management.
 
 ---
 
@@ -55,15 +55,15 @@ Bu proje, **n8n workflow automation tool**'unu Kubernetes üzerinde, **scalable 
 
 ## 📁 Directory Structure
 
-| Directory | Açıklama |
-|-----------|----------|
-| **n8n/** | n8n uygulamasının main ve worker Deployment'ları, Service'leri, ConfigMap ve Secret dosyaları |
-| **postgres/** | PostgreSQL database'i için StatefulSet, Service ve ConfigMap dosyaları |
-| **redis/** | Redis queue service için StatefulSet ve Service dosyaları |
+| Directory | Description |
+|-----------|-------------|
+| **n8n/** | n8n application configurations including Main and Worker Deployments, Services, ConfigMaps, and Secrets |
+| **postgres/** | PostgreSQL database configuration files: StatefulSet, Service, and ConfigMap |
+| **redis/** | Redis queue service configuration files: StatefulSet and Service |
 
 ```
 📦 N8N-KUBERNETES
-├── �� n8n/
+├── 📂 n8n/
 │   ├── n8n-cm.yaml                 (ConfigMap: Environment Variables)
 │   ├── n8n-secret.yaml             (Secret: Encryption Keys & Credentials)
 │   ├── n8n-svc.yaml                (Service: Cluster Internal)
@@ -81,81 +81,81 @@ Bu proje, **n8n workflow automation tool**'unu Kubernetes üzerinde, **scalable 
 ├── 📂 redis/
 │   ├── redis-sts.yaml              (StatefulSet: Redis Instance)
 │   └── redis-svc.yaml              (Service: Redis Access)
-└── README.md                        (Bu dosya)
+└── README.md                        (This file)
 ```
 
 ---
 
 ## ✅ Prerequisites
 
-- ✔️ Çalışan bir Kubernetes cluster (v1.20+)
-- ✔️ `kubectl` command-line tool yapılandırılmış
-- ✔️ Default StorageClass mevcut (Persistent Volumes için)
-- ✔️ (Opsiyonel) Ingress Controller veya Gateway API desteği
+- ✔️ A working Kubernetes cluster (v1.20+)
+- ✔️ `kubectl` command-line tool configured
+- ✔️ Default StorageClass available (for Persistent Volumes)
+- ✔️ (Optional) Ingress Controller or Gateway API support
 
 ---
 
 ## 🚀 Quick Start
 
-### 1️⃣ Namespace Creation
+### 1️⃣ Create Namespace
 
 ```bash
 kubectl create namespace n8n
 ```
 
-### 2️⃣ Database (PostgreSQL) Setup
+### 2️⃣ Deploy PostgreSQL Database
 
 ```bash
-# ConfigMap, Service ve StatefulSet'i apply edin
+# Apply ConfigMap, Service, and StatefulSet
 kubectl apply -f postgres/postgresql-cm.yaml
 kubectl apply -f postgres/postgresql-svc.yaml
 kubectl apply -f postgres/postgresql-sts.yaml
 
-# PostgreSQL pod'unun hazır olmasını kontrol edin (1-2 dakika)
+# Wait for PostgreSQL pod to be ready (1-2 minutes)
 kubectl wait --for=condition=ready pod -l app=postgres -n n8n --timeout=300s
 ```
 
-### 3️⃣ Redis Setup
+### 3️⃣ Deploy Redis
 
 ```bash
-# Service ve StatefulSet'i apply edin
+# Apply Service and StatefulSet
 kubectl apply -f redis/redis-svc.yaml
 kubectl apply -f redis/redis-sts.yaml
 
-# Redis pod'unun hazır olmasını kontrol edin
+# Wait for Redis pod to be ready
 kubectl wait --for=condition=ready pod -l app=redis -n n8n --timeout=300s
 ```
 
-### 4️⃣ n8n Configuration & Deployment
+### 4️⃣ Configure and Deploy n8n
 
 ```bash
-# ConfigMap ve Secret'ları apply edin
+# Apply ConfigMap and Secrets
 kubectl apply -f n8n/n8n-cm.yaml
 kubectl apply -f n8n/n8n-secret.yaml
 
-# Service'leri oluşturun
+# Create Services
 kubectl apply -f n8n/n8n-svc.yaml
 kubectl apply -f n8n/n8n-main-svc.yaml
 
-# Deployment'ları apply edin
+# Deploy Main and Worker instances
 kubectl apply -f n8n/n8n-main-deployment.yaml
 kubectl apply -f n8n/n8n-worker-deployment.yaml
 
-# n8n pod'larının hazır olmasını kontrol edin
+# Wait for n8n pods to be ready
 kubectl wait --for=condition=ready pod -l app=n8n-main -n n8n --timeout=300s
 ```
 
-### 5️⃣ Expose (Ingress/Route)
+### 5️⃣ Expose with Ingress/Route
 
 ```bash
-# HTTPRoute'u apply edin
+# Apply HTTPRoute
 kubectl apply -f n8n/n8n-httproute.yaml
 
-# veya HTTPS için:
+# Or for HTTPS:
 # kubectl apply -f n8n/n8n-httpsroute.yaml
 ```
 
-### 6️⃣ (Opsiyonel) Auto-scaling Etkinleştir
+### 6️⃣ (Optional) Enable Auto-scaling
 
 ```bash
 kubectl apply -f n8n/n8n-worker-hpa.yaml
@@ -167,22 +167,22 @@ kubectl apply -f n8n/n8n-worker-hpa.yaml
 
 ### 🔧 n8n ConfigMap (`n8n/n8n-cm.yaml`)
 
-| Variable | Değer | Açıklama |
-|----------|-------|----------|
+| Variable | Value | Description |
+|----------|-------|-------------|
 | **DB_TYPE** | postgresdb | Database type |
-| **EXECUTIONS_MODE** | queue | Queue tabanlı execution (worker desteği) |
-| **N8N_HOST** | n8n-test.app.setur.software | n8n'in serve edeceği domain |
-| **N8N_PROTOCOL** | https | Protokol (https/http) |
-| **N8N_SECURE_COOKIE** | true | Secure cookie kullan |
-| **GENERIC_TIMEZONE** | Europe/Istanbul | Timezone ayarı |
+| **EXECUTIONS_MODE** | queue | Queue-based execution (enables worker support) |
+| **N8N_HOST** | n8n-test.app.setur.software | Domain where n8n will be served |
+| **N8N_PROTOCOL** | https | Protocol (https/http) |
+| **N8N_SECURE_COOKIE** | true | Enable secure cookies |
+| **GENERIC_TIMEZONE** | Europe/Istanbul | Timezone setting |
 
 ### 🔐 n8n Secret (`n8n/n8n-secret.yaml`)
 
-> ⚠️ **ÖNEMLİ:** Production ortamında bu değerleri güvenli şekilde yönetin!
+> ⚠️ **IMPORTANT:** Manage these values securely in production!
 
-| Secret | Açıklama |
-|--------|----------|
-| **N8N_ENCRYPTION_KEY** | Sensitive data encryption key |
+| Secret | Description |
+|--------|-------------|
+| **N8N_ENCRYPTION_KEY** | Encryption key for sensitive data |
 | **DB_POSTGRESDB_PASSWORD** | Database connection password |
 
 ---
@@ -197,11 +197,11 @@ kubectl apply -f n8n/n8n-worker-hpa.yaml
 - **CPU Request:** 250m | **Limit:** 500m
 - **Memory Request:** 512Mi | **Limit:** 1Gi
 - **Default Replicas:** 2
-- **Auto-scaling:** HPA ile CPU %80 üzerine çıktığında scale up
+- **Auto-scaling:** HPA scales up when CPU exceeds 80%
 
 ### Redis
 - **Memory Limit:** 512Mi
-- **Max Memory Policy:** allkeys-lru (en az kullanılan key'leri sil)
+- **Max Memory Policy:** allkeys-lru (evict least recently used keys)
 
 ### PostgreSQL
 - **Volume:** 10Gi (default)
@@ -211,34 +211,34 @@ kubectl apply -f n8n/n8n-worker-hpa.yaml
 ## 🛠️ Useful Commands
 
 ```bash
-# Tüm namespace'leri kontrol et
+# View all namespaces
 kubectl get ns
 
-# n8n namespace'indeki tüm pod'ları görüntüle
+# Watch all pods in n8n namespace
 kubectl get pods -n n8n -w
 
-# Specific pod'un log'larını görmek
+# View logs from specific pod
 kubectl logs -f deployment/n8n-main -n n8n
 
-# n8n-worker pod'larının log'larını görmek (tüm)
+# View logs from all n8n-worker pods
 kubectl logs -f deployment/n8n-worker -n n8n --all-containers=true
 
-# Pod'un içine shell ile girmek
+# Access pod shell
 kubectl exec -it pod/n8n-main-xxxx -n n8n -- /bin/bash
 
-# Resource kullanımını kontrol et
+# Check resource usage
 kubectl top pods -n n8n
 
-# Deployment'ı scale etmek
+# Scale deployment
 kubectl scale deployment n8n-worker --replicas=4 -n n8n
 
-# ConfigMap'i update etmek
+# Edit ConfigMap
 kubectl edit configmap n8n-config -n n8n
 
-# Secret'ı kontrol etmek
+# View Secret
 kubectl get secret n8n-secret -n n8n -o yaml
 
-# Tüm resource'ları silmek
+# Delete all resources
 kubectl delete namespace n8n
 ```
 
@@ -247,39 +247,40 @@ kubectl delete namespace n8n
 ## ⚙️ Important Notes
 
 ### 💾 Persistence
-PostgreSQL ve n8n deployment'ları `VolumeClaimTemplate` veya `PersistentVolumeClaim` kullanmaktadır. Cluster'ınızda **default bir StorageClass** olduğundan emin olun:
+PostgreSQL and n8n deployments use `VolumeClaimTemplate` or `PersistentVolumeClaim`. Ensure your cluster has a **default StorageClass**:
 
 ```bash
 kubectl get storageclasses
 ```
 
 ### 📈 Worker Scaling
-Worker sayısını artırmak için:
+To increase the number of workers:
 
 ```bash
 # Manual scaling
 kubectl scale deployment n8n-worker --replicas=5 -n n8n
 
-# Veya `n8n-worker-hpa.yaml` ile Horizontal Pod Autoscaler kullanın
+# Or use Horizontal Pod Autoscaler
 kubectl apply -f n8n/n8n-worker-hpa.yaml
 kubectl get hpa -n n8n
 ```
 
 ### 🔒 Security Best Practices
 
-- ✔️ Secret'ları Kubernetes Secrets yerine external secret management tools ile yönetin (Vault, etc.)
-- ✔️ Network Policies ile pod iletişimini kısıtlayın
-- ✔️ RBAC (Role-Based Access Control) yapılandırın
-- ✔️ Pod Security Policies etkinleştirin
+- ✔️ Use external secret management tools (Vault, AWS Secrets Manager) instead of Kubernetes Secrets
+- ✔️ Implement Network Policies to restrict pod-to-pod communication
+- ✔️ Configure RBAC (Role-Based Access Control)
+- ✔️ Enable Pod Security Policies
+- ✔️ Use image pull secrets for private registries
 
 ### 🚨 Troubleshooting
 
-**Pod'lar pending durumda kalmışsa:**
+**If pods are stuck in Pending state:**
 ```bash
 kubectl describe pod <pod-name> -n n8n
 ```
 
-**Database connection hatası:**
+**Database connection errors:**
 ```bash
 kubectl logs deployment/n8n-main -n n8n | grep -i "database\|connection"
 ```
@@ -289,20 +290,32 @@ kubectl logs deployment/n8n-main -n n8n | grep -i "database\|connection"
 kubectl exec -it pod/redis-0 -n n8n -- redis-cli INFO
 ```
 
+**Check pod resources:**
+```bash
+kubectl top pod <pod-name> -n n8n
+```
+
 ---
 
 ## 📚 Resources
 
-- 📖 [n8n Documentation](https://docs.n8n.io)
+- �� [n8n Documentation](https://docs.n8n.io)
 - 📖 [Kubernetes Documentation](https://kubernetes.io/docs)
 - 📖 [PostgreSQL on Kubernetes](https://www.postgresql.org)
 - 📖 [Redis on Kubernetes](https://redis.io)
+- 📖 [Kubernetes Ingress](https://kubernetes.io/docs/concepts/services-networking/ingress/)
 
 ---
 
 ## 📝 License
 
-MIT License - Detaylar için LICENSE dosyasına bakın.
+MIT License - See LICENSE file for details.
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit pull requests or open issues for bugs and feature requests.
 
 ---
 
