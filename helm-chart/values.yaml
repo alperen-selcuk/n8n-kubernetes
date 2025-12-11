@@ -5,6 +5,82 @@
 # Namespace
 namespace: n8n
 
+# Redis (genellikle değiştirmeye gerek yok)
+redis:
+  enabled: true
+  # replicas: 1
+  # port: 6379
+  # storage:
+  #   size: 1Gi
+  #   storageClassName: ""
+
+# PostgreSQL Authentication (CUSTOMIZE REQUIRED)
+postgresql:
+  enabled: true
+  auth:
+    username: "n8n"
+    password: "n8n"  # ÖNEMLİ: Değiştirin!
+    database: "n8n"
+  # replicas: 1
+  # port: 5432
+  # storage:
+  #   size: 5Gi
+  #   storageClassName: ""
+
+# N8N Secrets (CUSTOMIZE REQUIRED)
+n8n:
+  secret:
+    encryptionKey: "your-super-secret-encryption-key"  # ÖNEMLİ: Değiştirin!
+    dbPassword: "n8n"  # ÖNEMLİ: postgresql.auth.password ile aynı olmalı
+  
+  # Main instance
+  main:
+    enabled: true
+    # replicas: 1
+    # storage: 5Gi
+    # storageClass: ""
+  
+  # Worker instance
+  worker:
+    enabled: true
+    # replicas: 1
+  
+  # N8N Configuration
+  config:
+    # Domain yapılandırması (ZORUNLU)
+    host: "n8n.example.com"  # ÖNEMLİ: Domain adınızı girin
+    protocol: "https"
+    webhookUrl: "https://n8n.example.com"  # ÖNEMLİ: Domain adınızı girin
+    
+    # Opsiyonel ayarlar (gerekirse değiştirin, yoksa default değerler kullanılır)
+    # timezone: "UTC"  # Zaman dilimi (örn: "Europe/Istanbul", "America/New_York")
+    # port: 5678
+    
+    # Execution kayıt ayarları
+    # executionsDataSaveOnError: "all"  # "all" veya "none"
+    # executionsDataSaveOnSuccess: "none"  # "all" veya "none"
+    # executionsDataPrune: "true"  # Eski execution'ları otomatik temizle
+    # executionsDataMaxAge: "336"  # Execution saklama süresi (saat cinsinden, 336 = 14 gün)
+    
+    # Güvenlik ayarları
+    # secureCookie: "true"  # HTTPS için cookie güvenliği
+    # blockEnvAccessInNode: "true"  # Node'lardan environment variable erişimini engelle
+    # payloadSizeMax: "16"  # Maksimum payload boyutu (MB)
+    
+    # Database ayarları (genellikle değiştirmeye gerek yok)
+    # dbType: "postgres"
+    # dbHost: "postgresql"
+    # dbPort: 5432
+    # dbDatabase: "n8n"  # postgresql.auth.database ile eşleşmeli
+    # dbUser: "n8n"  # postgresql.auth.username ile eşleşmeli
+    # dbSchema: "public"
+    
+    # Queue/Worker ayarları (genellikle değiştirmeye gerek yok)
+    # executionsMode: "queue"  # "queue" veya "regular"
+    # queueBullRedisHost: "redis"
+    # queueBullRedisPort: 6379
+    # queueBullRedisDb: 1
+
 # Ingress configuration (opsiyonel - ingress kullanacaksanız)
 ingress:
   enabled: false
@@ -61,52 +137,3 @@ backup:
     #   enabled: false
     #   server: "nfs-server.example.com"
     #   path: "/exports/n8n-backups"
-
-# PostgreSQL Authentication (CUSTOMIZE REQUIRED)
-postgresql:
-  auth:
-    username: "n8n"
-    password: "n8n"  # ÖNEMLİ: Değiştirin!
-    database: "n8n"
-
-# N8N Secrets (CUSTOMIZE REQUIRED)
-n8n:
-  secret:
-    encryptionKey: "your-super-secret-encryption-key"  # ÖNEMLİ: Değiştirin!
-    dbPassword: "n8n"  # ÖNEMLİ: postgresql.auth.password ile aynı olmalı
-  
-  # N8N Configuration
-  config:
-    # Domain yapılandırması (ZORUNLU)
-    host: "n8n.example.com"  # ÖNEMLİ: Domain adınızı girin
-    protocol: "https"
-    webhookUrl: "https://n8n.example.com"  # ÖNEMLİ: Domain adınızı girin
-    
-    # Opsiyonel ayarlar (gerekirse değiştirin, yoksa default değerler kullanılır)
-    # timezone: "UTC"  # Zaman dilimi (örn: "Europe/Istanbul", "America/New_York")
-    # port: 5678
-    
-    # Execution kayıt ayarları
-    # executionsDataSaveOnError: "all"  # "all" veya "none"
-    # executionsDataSaveOnSuccess: "none"  # "all" veya "none"
-    # executionsDataPrune: "true"  # Eski execution'ları otomatik temizle
-    # executionsDataMaxAge: "336"  # Execution saklama süresi (saat cinsinden, 336 = 14 gün)
-    
-    # Güvenlik ayarları
-    # secureCookie: "true"  # HTTPS için cookie güvenliği
-    # blockEnvAccessInNode: "true"  # Node'lardan environment variable erişimini engelle
-    # payloadSizeMax: "16"  # Maksimum payload boyutu (MB)
-    
-    # Database ayarları (genellikle değiştirmeye gerek yok)
-    # dbType: "postgres"
-    # dbHost: "postgresql"
-    # dbPort: 5432
-    # dbDatabase: "n8n"  # postgresql.auth.database ile eşleşmeli
-    # dbUser: "n8n"  # postgresql.auth.username ile eşleşmeli
-    # dbSchema: "public"
-    
-    # Queue/Worker ayarları (genellikle değiştirmeye gerek yok)
-    # executionsMode: "queue"  # "queue" veya "regular"
-    # queueBullRedisHost: "redis"
-    # queueBullRedisPort: 6379
-    # queueBullRedisDb: 1
