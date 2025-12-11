@@ -16,7 +16,7 @@ redis:
   port: 6379
   storage:
     size: 1Gi
-    storageClassName: ""
+    storageClassName: "local-path"
 
 # PostgreSQL Authentication (CUSTOMIZE REQUIRED)
 postgresql:
@@ -33,7 +33,7 @@ postgresql:
   port: 5432
   storage:
     size: 5Gi
-    storageClassName: ""
+    storageClassName: "local-path"
 
 # N8N Secrets (CUSTOMIZE REQUIRED)
 n8n:
@@ -51,7 +51,7 @@ n8n:
     enabled: true
     replicas: 1
     storage: 5Gi
-    storageClass: ""
+    storageClass: "local-path"  # K3s default storage class
   
   # Worker instance
   worker:
