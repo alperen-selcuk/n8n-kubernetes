@@ -264,12 +264,38 @@ backup:
 
 ---
 
-## ✅ Prerequisites
+## Helm Chart Usage
 
-- ✔️ A working Kubernetes cluster (v1.20+)
-- ✔️ `kubectl` command-line tool configured
-- ✔️ Default StorageClass available (for Persistent Volumes)
-- ✔️ (Optional) Ingress Controller or Gateway API support
+To install the chart with the release name `n8n` in the `n8n` namespace:
+
+```bash
+helm install n8n ./helm-chart --namespace n8n --create-namespace
+```
+
+### Configuration
+
+The Helm chart is configurable through the `helm-chart/values.yaml` file. You can override default values by providing your own `custom-values.yaml` file during installation.
+
+```bash
+helm install n8n ./helm-chart -n n8n --create-namespace -f custom-values.yaml
+```
+
+#### Ingress and Gateway API
+
+You can expose n8n using either a standard Ingress or the newer Gateway API. The following parameters can be configured:
+
+| Parameter | Description | Default |
+| --- | --- | --- |
+| `ingress.enabled` | Enable ingress | `false` |
+| `ingress.className` | Ingress class name | `"nginx"` |
+| `ingress.host` | Ingress host | `"n8n.example.com"` |
+| `ingress.annotations` | Ingress annotations | `{}` |
+| `gateway.enabled` | Enable gateway | `false` |
+| `gateway.name` | Gateway name | `"http-gateway"` |
+| `gateway.namespace` | Gateway namespace | `"default"` |
+| `gateway.host` | Gateway host | `"n8n.gw.example.com"` |
+
+For more details on the chart's structure and all available configuration options, please refer to the [helm-chart/README.md](helm-chart/README.md).
 
 ---
 

@@ -26,7 +26,18 @@ helm install n8n ./helm-chart -n n8n --create-namespace -f custom-values.yaml
 
 ## Configuration
 
-All configuration options are available in `values.yaml`
+The following table lists the configurable parameters of the n8n chart and their default values.
+
+| Parameter | Description | Default |
+| --- | --- | --- |
+| `ingress.enabled` | Enable ingress | `false` |
+| `ingress.className` | Ingress class name | `"nginx"` |
+| `ingress.host` | Ingress host | `"n8n.example.com"` |
+| `ingress.annotations` | Ingress annotations | `{}` |
+| `gateway.enabled` | Enable gateway | `false` |
+| `gateway.name` | Gateway name | `"http-gateway"` |
+| `gateway.namespace` | Gateway namespace | `"default"` |
+| `gateway.host` | Gateway host | `"n8n.gw.example.com"` |
 
 ### Key Configuration Options
 
