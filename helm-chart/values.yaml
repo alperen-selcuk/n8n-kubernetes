@@ -4,6 +4,7 @@
 
 # Namespace
 namespace: n8n
+createNamespace: false  # Helm install --create-namespace kullanın
 
 # Redis (genellikle değiştirmeye gerek yok)
 redis:
