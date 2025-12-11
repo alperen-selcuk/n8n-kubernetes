@@ -1,0 +1,33 @@
+{{- if .Values.n8n.worker.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: n8n-worker
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.n8n.worker.replicas }}
+  selector:
+    matchLabels:
+      app: n8n-worker
+  template:
+    metadata:
+      labels:
+        app: n8n-worker
+    spec:
+      containers:
+      - name: n8n-worker
+        image: {{ .Values.n8n.image.repository }}:{{ .Values.n8n.image.tag }}
+        imagePullPolicy: {{ .Values.n8n.image.pullPolicy }}
+        command: ["n8n", "worker"]
+        envFrom:
+        - configMapRef:
+            name: n8n-config
+        - secretRef:
+            name: n8n-secret
+        resources:
+          {{- toYaml .Values.n8n.worker.resources | nindent 10 }}
+        livenessProbe:
+          {{- toYaml .Values.n8n.worker.livenessProbe | nindent 10 }}
+        readinessProbe:
+          {{- toYaml .Values.n8n.worker.readinessProbe | nindent 10 }}
+{{- end }}

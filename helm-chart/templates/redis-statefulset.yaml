@@ -1,0 +1,57 @@
+{{- if .Values.redis.enabled }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis
+  namespace: {{ .Values.namespace }}
+spec:
+  serviceName: "redis"
+  replicas: {{ .Values.redis.replicas }}
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+      - name: redis
+        image: {{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}
+        args:
+        - redis-server
+        - --appendonly
+        - {{ .Values.redis.appendOnly | quote }}
+        - --maxmemory
+        - {{ .Values.redis.maxMemory | quote }}
+        - --maxmemory-policy
+        - {{ .Values.redis.maxMemoryPolicy | quote }}
+        ports:
+        - containerPort: {{ .Values.redis.port }}
+        volumeMounts:
+        - name: redis-data
+          mountPath: /data
+        resources:
+          {{- toYaml .Values.redis.resources | nindent 10 }}
+        livenessProbe:
+          tcpSocket:
+            port: {{ .Values.redis.port }}
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+            - redis-cli
+            - ping
+          initialDelaySeconds: 5
+          periodSeconds: 5
+  volumeClaimTemplates:
+  - metadata:
+      name: redis-data
+    spec:
+      storageClassName: {{ .Values.redis.storageClass }}
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: {{ .Values.redis.storage }}
+{{- end }}

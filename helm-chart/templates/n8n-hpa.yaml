@@ -1,0 +1,44 @@
+{{- if .Values.autoscaling.enabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: n8n-worker-hpa
+  namespace: {{ .Values.namespace }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: n8n-worker
+  minReplicas: {{ .Values.autoscaling.minReplicas }}
+  maxReplicas: {{ .Values.autoscaling.maxReplicas }}
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.autoscaling.targetCPUUtilizationPercentage }}
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: {{ .Values.autoscaling.targetMemoryUtilizationPercentage }}
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: {{ .Values.autoscaling.scaleDown.stabilizationWindowSeconds }}
+      policies:
+      {{- range .Values.autoscaling.scaleDown.policies }}
+      - type: {{ .type }}
+        value: {{ .value }}
+        periodSeconds: {{ .periodSeconds }}
+      {{- end }}
+    scaleUp:
+      stabilizationWindowSeconds: {{ .Values.autoscaling.scaleUp.stabilizationWindowSeconds }}
+      policies:
+      {{- range .Values.autoscaling.scaleUp.policies }}
+      - type: {{ .type }}
+        value: {{ .value }}
+        periodSeconds: {{ .periodSeconds }}
+      {{- end }}
+{{- end }}

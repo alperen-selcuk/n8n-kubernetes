@@ -1,0 +1,48 @@
+{{- if .Values.n8n.main.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: n8n-main
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.n8n.main.replicas }}
+  selector:
+    matchLabels:
+      app: n8n-main
+  template:
+    metadata:
+      labels:
+        app: n8n-main
+    spec:
+      initContainers:
+      - name: fix-permissions
+        image: busybox
+        command: ["sh", "-c", "chown -R 1000:1000 /home/node/.n8n"]
+        volumeMounts:
+        - name: n8n-data
+          mountPath: /home/node/.n8n
+      containers:
+      - name: n8n-main
+        image: {{ .Values.n8n.image.repository }}:{{ .Values.n8n.image.tag }}
+        imagePullPolicy: {{ .Values.n8n.image.pullPolicy }}
+        ports:
+        - containerPort: 5678
+        envFrom:
+        - configMapRef:
+            name: n8n-config
+        - secretRef:
+            name: n8n-secret
+        volumeMounts:
+        - name: n8n-data
+          mountPath: /home/node/.n8n
+        resources:
+          {{- toYaml .Values.n8n.main.resources | nindent 10 }}
+        livenessProbe:
+          {{- toYaml .Values.n8n.main.livenessProbe | nindent 10 }}
+        readinessProbe:
+          {{- toYaml .Values.n8n.main.readinessProbe | nindent 10 }}
+      volumes:
+      - name: n8n-data
+        persistentVolumeClaim:
+          claimName: n8n-data
+{{- end }}

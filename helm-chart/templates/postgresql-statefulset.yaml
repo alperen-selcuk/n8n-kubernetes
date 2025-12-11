@@ -1,0 +1,64 @@
+{{- if .Values.postgresql.enabled }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: {{ .Values.namespace }}
+spec:
+  serviceName: postgres
+  replicas: {{ .Values.postgresql.replicas }}
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      initContainers:
+        - name: fix-permissions
+          image: busybox
+          command:
+            - sh
+            - '-c'
+            - chown -R 1000:1000 /var/lib/postgresql/data
+          resources: {}
+          volumeMounts:
+            - name: postgres
+              mountPath: /var/lib/postgresql/data
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          imagePullPolicy: Always
+          securityContext:
+            privileged: true
+      containers:
+        - name: postgres
+          image: {{ .Values.postgresql.image.repository }}:{{ .Values.postgresql.image.tag }}
+          imagePullPolicy: {{ .Values.postgresql.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.postgresql.port }}
+          env:
+            - name: PGDATA
+              value: "/var/lib/postgresql/data/pgdata"
+          envFrom:
+            - configMapRef:
+                name: postgres-config
+          volumeMounts:
+            - mountPath: /var/lib/postgresql/data
+              name: postgres
+          {{- with .Values.postgresql.resources }}
+          resources:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres
+      labels:
+        app: postgres
+    spec:
+      storageClassName: {{ .Values.postgresql.storageClass }}
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: {{ .Values.postgresql.storage }}
+{{- end }}
