@@ -1,12 +1,15 @@
-{{- if and .Values.ingress.enabled .Values.ingress.className }}
+{{- if .Values.ingress.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ include "n8n.fullname" . }}-http
+  name: n8n-ingress
+  namespace: {{ .Values.namespace }}
   labels:
     {{- include "n8n.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
   annotations:
-    {{- toYaml .Values.ingress.annotations | nindent 4 }}
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 spec:
   ingressClassName: {{ .Values.ingress.className }}
   rules:
@@ -17,7 +20,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: {{ include "n8n.fullname" . }}-main
+                name: n8n-service
                 port:
-                  number: 5678
+                  number: {{ include "service.port" . }}
 {{- end }}
