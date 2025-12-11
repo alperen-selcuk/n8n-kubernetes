@@ -16,7 +16,7 @@ redis:
   port: 6379
   storage:
     size: 1Gi
-    storageClassName: "local-path"
+    storageClassName: ""
 
 # PostgreSQL Authentication (CUSTOMIZE REQUIRED)
 postgresql:
@@ -33,7 +33,7 @@ postgresql:
   port: 5432
   storage:
     size: 5Gi
-    storageClassName: "local-path"
+    storageClassName: ""
 
 # N8N Secrets (CUSTOMIZE REQUIRED)
 n8n:
