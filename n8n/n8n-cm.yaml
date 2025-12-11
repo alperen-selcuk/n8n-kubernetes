@@ -16,10 +16,10 @@ data:
   QUEUE_BULL_REDIS_PORT: "6379"
   QUEUE_BULL_REDIS_DB: "0"
 
-  N8N_HOST: "n8n-test.app.setur.software"
+  N8N_HOST: "n8n.example.com"
   N8N_PROTOCOL: "https"
   N8N_PORT: "5678"
-  WEBHOOK_URL: "https://n8n-test.app.setur.software/"
+  WEBHOOK_URL: "http://n8n.example.com/"
 
   N8N_SECURE_COOKIE: "true"
   N8N_BLOCK_ENV_ACCESS_IN_NODE: "true"
