@@ -94,6 +94,12 @@ n8n:
     # queueBullRedisPort: 6379
     # queueBullRedisDb: 1
 
+# Service configuration
+service:
+  type: ClusterIP
+  port: 5678
+  targetPort: 5678
+
 # Ingress configuration (opsiyonel - ingress kullanacaksanız)
 ingress:
   enabled: false
@@ -110,6 +116,25 @@ gateway:
 # Autoscaling (opsiyonel - HPA kullanacaksanız)
 autoscaling:
   enabled: false
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+  scaleDown:
+    stabilizationWindowSeconds: 300
+    policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+  scaleUp:
+    stabilizationWindowSeconds: 0
+    policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+      - type: Pods
+        value: 4
+        periodSeconds: 15
 
 # Backup configuration (opsiyonel - backup kullanacaksanız)
 backup:

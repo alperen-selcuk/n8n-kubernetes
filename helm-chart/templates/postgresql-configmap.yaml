@@ -7,7 +7,7 @@ metadata:
   labels:
     app: postgres
 data:
-  POSTGRES_DB: {{ .Values.postgresql.database }}
-  POSTGRES_USER: {{ .Values.postgresql.username }}
-  POSTGRES_PASSWORD: {{ .Values.postgresql.password }}
+  POSTGRES_DB: {{ .Values.postgresql.auth.database }}
+  POSTGRES_USER: {{ .Values.postgresql.auth.username }}
+  POSTGRES_PASSWORD: {{ .Values.postgresql.auth.password }}
 {{- end }}
