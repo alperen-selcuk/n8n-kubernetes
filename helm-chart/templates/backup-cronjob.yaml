@@ -1,0 +1,107 @@
+{{- if .Values.backup.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "n8n.fullname" . }}-backup
+  labels:
+    {{- include "n8n.labels" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.backup.schedule | quote }}
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: backup
+              image: "{{ .Values.backup.image.repository }}:{{ .Values.backup.image.tag }}"
+              imagePullPolicy: {{ .Values.backup.image.pullPolicy }}
+              command:
+                - "/bin/sh"
+                - "-c"
+                - |
+                  BACKUP_FILE="/backups/n8n-backup-$(date +%Y-%m-%d-%H-%M-%S).sql.gz"
+                  echo "Starting backup to ${BACKUP_FILE}..."
+                  
+                  # Install necessary tools
+                  apk add --no-cache postgresql-client gzip
+                  
+                  # Dump and compress the database
+                  pg_dump -h postgresql -U postgres -d n8n -F c -b -v | gzip > ${BACKUP_FILE}
+                  
+                  echo "Backup created successfully."
+
+                  {{- if .Values.backup.storage.s3.enabled }}
+                  echo "Uploading to AWS S3..."
+                  apk add --no-cache aws-cli
+                  export AWS_REGION={{ .Values.backup.storage.s3.region }}
+                  aws s3 cp ${BACKUP_FILE} s3://{{ .Values.backup.storage.s3.bucket }}/
+                  echo "Upload to AWS S3 complete."
+                  {{- end }}
+
+                  {{- if .Values.backup.storage.minio.enabled }}
+                  echo "Uploading to MinIO..."
+                  apk add --no-cache aws-cli
+                  aws s3 --endpoint-url {{ .Values.backup.storage.minio.endpoint }} cp ${BACKUP_FILE} s3://{{ .Values.backup.storage.minio.bucket }}/
+                  echo "Upload to MinIO complete."
+                  {{- end }}
+
+                  {{- if .Values.backup.storage.azure.enabled }}
+                  echo "Uploading to Azure Blob Storage..."
+                  apk add --no-cache azure-cli
+                  az storage blob upload --container-name {{ .Values.backup.storage.azure.container }} --file ${BACKUP_FILE} --name $(basename ${BACKUP_FILE})
+                  echo "Upload to Azure complete."
+                  {{- end }}
+              env:
+                - name: PGPASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ include "n8n.fullname" . }}-postgresql
+                      key: postgresql-password
+                {{- if .Values.backup.storage.s3.enabled }}
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.backup.storage.s3.secretName }}
+                      key: accessKey
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.backup.storage.s3.secretName }}
+                      key: secretKey
+                {{- end }}
+                {{- if .Values.backup.storage.minio.enabled }}
+                - name: AWS_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.backup.storage.minio.secretName }}
+                      key: accessKey
+                - name: AWS_SECRET_ACCESS_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.backup.storage.minio.secretName }}
+                      key: secretKey
+                {{- end }}
+                {{- if .Values.backup.storage.azure.enabled }}
+                - name: AZURE_STORAGE_CONNECTION_STRING
+                  valueFrom:
+                    secretKeyRef:
+                      name: {{ .Values.backup.storage.azure.secretName }}
+                      key: connectionString
+                {{- end }}
+              volumeMounts:
+                - name: backup-storage
+                  mountPath: /backups
+          volumes:
+            - name: backup-storage
+              {{- if .Values.backup.storage.persistentVolume.enabled }}
+              persistentVolumeClaim:
+                claimName: {{ .Values.backup.storage.existingClaim | default (printf "%s-backup-pvc" (include "n8n.fullname" .)) }}
+              {{- else if .Values.backup.storage.nfs.enabled }}
+              nfs:
+                server: {{ .Values.backup.storage.nfs.server }}
+                path: {{ .Values.backup.storage.nfs.path }}
+              {{- else }}
+              emptyDir: {}
+              {{- end }}
+{{- end }}

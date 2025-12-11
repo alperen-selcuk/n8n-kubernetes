@@ -233,6 +233,35 @@ You can customize the deployment by overriding the default values in `values.yam
 helm install n8n ./helm-chart --namespace n8n --create-namespace -f my-values.yaml
 ```
 
+### PostgreSQL Backup
+
+The Helm chart includes an optional CronJob to automatically back up the PostgreSQL database. You can enable and configure it in your `my-values.yaml`:
+
+```yaml
+backup:
+  enabled: true
+  schedule: "0 3 * * *" # Daily at 3 AM
+  storage:
+    # Option 1: Use a new PersistentVolumeClaim
+    persistentVolume:
+      enabled: true
+      size: 10Gi
+      storageClassName: "your-storage-class"
+      
+    # Option 2: Use S3-compatible storage
+    # s3:
+    #   enabled: true
+    #   endpoint: "s3.your-region.amazonaws.com"
+    #   bucket: "your-n8n-backups"
+    #   secretName: "s3-credentials-secret"
+
+    # Option 3: Use Azure Blob Storage
+    # azure:
+    #   enabled: true
+    #   container: "your-backup-container"
+    #   secretName: "azure-storage-secret"
+```
+
 ---
 
 ## ✅ Prerequisites
