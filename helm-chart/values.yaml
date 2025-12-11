@@ -12,11 +12,11 @@ redis:
     repository: redis
     tag: "6.2"
     pullPolicy: IfNotPresent
-  # replicas: 1
-  # port: 6379
-  # storage:
-  #   size: 1Gi
-  #   storageClassName: ""
+  replicas: 1
+  port: 6379
+  storage:
+    size: 1Gi
+    storageClassName: ""
 
 # PostgreSQL Authentication (CUSTOMIZE REQUIRED)
 postgresql:
@@ -29,11 +29,11 @@ postgresql:
     username: "n8n"
     password: "n8n"  # ÖNEMLİ: Değiştirin!
     database: "n8n"
-  # replicas: 1
-  # port: 5432
-  # storage:
-  #   size: 5Gi
-  #   storageClassName: ""
+  replicas: 1
+  port: 5432
+  storage:
+    size: 5Gi
+    storageClassName: ""
 
 # N8N Secrets (CUSTOMIZE REQUIRED)
 n8n:
@@ -49,14 +49,14 @@ n8n:
   # Main instance
   main:
     enabled: true
-    # replicas: 1
-    # storage: 5Gi
-    # storageClass: ""
+    replicas: 1
+    storage: 5Gi
+    storageClass: ""
   
   # Worker instance
   worker:
     enabled: true
-    # replicas: 1
+    replicas: 1
   
   # N8N Configuration
   config:
