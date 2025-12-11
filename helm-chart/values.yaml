@@ -8,6 +8,10 @@ namespace: n8n
 # Redis (genellikle değiştirmeye gerek yok)
 redis:
   enabled: true
+  image:
+    repository: redis
+    tag: "6.2"
+    pullPolicy: IfNotPresent
   # replicas: 1
   # port: 6379
   # storage:
@@ -17,6 +21,10 @@ redis:
 # PostgreSQL Authentication (CUSTOMIZE REQUIRED)
 postgresql:
   enabled: true
+  image:
+    repository: postgres
+    tag: "13"
+    pullPolicy: IfNotPresent
   auth:
     username: "n8n"
     password: "n8n"  # ÖNEMLİ: Değiştirin!
@@ -29,6 +37,11 @@ postgresql:
 
 # N8N Secrets (CUSTOMIZE REQUIRED)
 n8n:
+  image:
+    repository: n8nio/n8n
+    tag: "latest"
+    pullPolicy: IfNotPresent
+  
   secret:
     encryptionKey: "your-super-secret-encryption-key"  # ÖNEMLİ: Değiştirin!
     dbPassword: "n8n"  # ÖNEMLİ: postgresql.auth.password ile aynı olmalı
