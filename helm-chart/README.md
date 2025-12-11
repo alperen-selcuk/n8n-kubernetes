@@ -39,3 +39,41 @@ All configuration options are available in `values.yaml`
 - `n8n.secret.*`: Sensitive credentials (base64 encoded)
 - `ingress.*`: Ingress/Gateway configuration
 - `autoscaling.*`: HPA settings for workers
+
+### Ingress and Gateway API
+
+You can expose n8n using either a standard Ingress or the newer Gateway API.
+
+#### Ingress
+
+To use an Ingress, set `ingress.enabled` to `true` and specify the `ingress.host`.
+
+Example `custom-values.yaml`:
+
+```yaml
+ingress:
+  enabled: true
+  host: "n8n.yourdomain.com"
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: 100m
+```
+
+This will create an Ingress resource for the specified host.
+
+#### Gateway API
+
+To use the Gateway API, you need a Gateway API controller running in your cluster. Then, set `gateway.enabled` to `true` and specify the `gateway.host`.
+
+Example `custom-values.yaml`:
+
+```yaml
+gateway:
+  enabled: true
+  host: "n8n.gw.yourdomain.com"
+  name: "http-gateway"
+  namespace: "default"
+```
+
+This will create an `HTTPRoute` resource for the specified host, attaching it to the specified gateway.
+
