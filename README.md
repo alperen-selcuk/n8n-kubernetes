@@ -86,6 +86,155 @@ A comprehensive Kubernetes deployment configuration for **n8n workflow automatio
 
 ---
 
+## 📦 Helm Chart
+
+This repository includes a Helm chart to simplify the deployment and management of the n8n stack on Kubernetes.
+
+### Chart Structure
+
+```
+📦 helm-chart
+├── Chart.yaml                  # Chart metadata
+├── values.yaml                 # Default configuration values
+├── .helmignore                 # Files to ignore when packaging
+├── README.md                   # Helm chart README
+└── templates/                  # Directory of templates that, when combined with values, will generate valid Kubernetes manifest files
+    ├── _helpers.tpl            # Helm helper templates
+    ├── namespace.yaml          # Template for the namespace
+    ├── n8n-configmap.yaml      # Template for n8n ConfigMap
+    ├── n8n-secret.yaml         # Template for n8n Secrets
+    ├── n8n-service.yaml        # Template for internal n8n service
+    ├── n8n-main-service.yaml   # Template for the main n8n service
+    ├── n8n-main-deployment.yaml# Template for the main n8n deployment
+    ├── n8n-worker-deployment.yaml# Template for the n8n worker deployment
+    ├── n8n-hpa.yaml            # Template for the worker HPA
+    ├── n8n-pvc.yaml            # Template for the main persistent volume claim
+    ├── n8n-httproute.yaml      # Template for the HTTPRoute
+    ├── n8n-httpsroute.yaml     # Template for the HTTPSRoute
+    ├── postgresql-statefulset.yaml # Template for PostgreSQL StatefulSet
+    ├── postgresql-service.yaml # Template for PostgreSQL Service
+    ├── postgresql-configmap.yaml # Template for PostgreSQL ConfigMap
+    ├── redis-statefulset.yaml  # Template for Redis StatefulSet
+    └── redis-service.yaml      # Template for Redis Service
+```
+
+### Installation
+
+To deploy the chart, use the following commands:
+
+1.  **Navigate to the chart directory:**
+    ```sh
+    cd helm-chart
+    ```
+
+2.  **Install the chart:**
+    ```sh
+    helm install my-n8n . --namespace n8n --create-namespace
+    ```
+    *Replace `my-n8n` with your desired release name.*
+
+### Configuration
+
+The following table lists the configurable parameters of the n8n chart and their default values.
+
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `namespace` | The namespace to deploy all resources into. | `n8n` |
+| `postgresql.enabled` | Enable PostgreSQL deployment. | `true` |
+| `postgresql.image.repository` | PostgreSQL image repository. | `postgres` |
+| `postgresql.image.tag` | PostgreSQL image tag. | `latest` |
+| `postgresql.database` | PostgreSQL database name. | `n8n` |
+| `postgresql.username` | PostgreSQL username. | `n8n` |
+| `postgresql.password` | PostgreSQL password. | `PasdN1831c!*n` |
+| `postgresql.storage` | Persistent storage size for PostgreSQL. | `10Gi` |
+| `redis.enabled` | Enable Redis deployment. | `true` |
+| `redis.image.repository` | Redis image repository. | `redis` |
+| `redis.image.tag` | Redis image tag. | `7-alpine` |
+| `redis.maxMemory` | Redis max memory. | `512mb` |
+| `redis.storage` | Persistent storage size for Redis. | `2Gi` |
+| `n8n.image.repository` | n8n image repository. | `docker.n8n.io/n8nio/n8n` |
+| `n8n.image.tag` | n8n image tag. | `latest` |
+| `n8n.main.enabled` | Enable the main n8n instance. | `true` |
+| `n8n.main.replicas` | Number of replicas for the main instance. | `1` |
+| `n8n.main.storage` | Persistent storage size for the main instance. | `10Gi` |
+| `n8n.worker.enabled` | Enable n8n worker instances. | `true` |
+| `n8n.worker.replicas` | Initial number of worker replicas. | `2` |
+| `n8n.hpa.enabled` | Enable Horizontal Pod Autoscaler for workers. | `true` |
+| `n8n.hpa.minReplicas` | Minimum number of worker replicas. | `2` |
+| `n8n.hpa.maxReplicas` | Maximum number of worker replicas. | `5` |
+| `n8n.config.dbType` | n8n database type. | `postgresdb` |
+| `n8n.config.dbHost` | n8n database host. | `postgres` |
+
+---
+
+## 🚀 Deployment
+
+To deploy the n8n stack, you can apply the Kubernetes manifest files directly.
+
+1.  **Create the namespace:**
+    ```sh
+    kubectl create namespace n8n
+    ```
+
+2.  **Apply the configurations:**
+    ```sh
+    kubectl apply -f postgres/ -n n8n
+    kubectl apply -f redis/ -n n8n
+    kubectl apply -f n8n/ -n n8n
+    ```
+
+## 🚦 Accessing n8n
+
+Once deployed, you can access the n8n UI. If you are using a local Kubernetes cluster (like Minikube or Docker Desktop), you can port-forward the service:
+
+```sh
+kubectl port-forward svc/n8n-main-svc 5678:5678 -n n8n
+```
+
+Then, open your browser and go to `http://localhost:5678`.
+
+## ⚙️ Configuration
+
+Key configurations are managed via `ConfigMap` and `Secret` files.
+
+-   **`n8n/n8n-cm.yaml`**: Contains environment variables for n8n, such as database connection details, Redis settings, and execution modes.
+-   **`n8n/n8n-secret.yaml`**: Stores sensitive data like the encryption key and database credentials. Remember to **Base64 encode** your secret values.
+
+## ⚖️ License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+
+### Quick Start with Helm
+
+#### 1️⃣ Install Chart
+
+```bash
+helm install n8n ./helm-chart --namespace n8n --create-namespace
+```
+
+#### 2️⃣ Upgrade Chart
+
+```bash
+helm upgrade n8n ./helm-chart --namespace n8n
+```
+
+#### 3️⃣ Uninstall Chart
+
+```bash
+helm uninstall n8n --namespace n8n
+```
+
+### Customize Configuration
+
+You can customize the deployment by overriding the default values in `values.yaml`. Create a custom `my-values.yaml` file and use it during installation:
+
+```bash
+helm install n8n ./helm-chart --namespace n8n --create-namespace -f my-values.yaml
+```
+
+---
+
 ## ✅ Prerequisites
 
 - ✔️ A working Kubernetes cluster (v1.20+)
