@@ -7,6 +7,6 @@ spec:
   selector:
     app: n8n-main
   ports:
-  - port: {{ .Values.service.port }}
-    targetPort: {{ .Values.service.targetPort }}
-  type: {{ .Values.service.type }}
+  - port: {{ include "service.port" . }}
+    targetPort: {{ include "service.targetPort" . }}
+  type: {{ include "service.type" . }}

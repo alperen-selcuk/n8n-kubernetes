@@ -1,4 +1,4 @@
-{{- if .Values.redis.enabled }}
+{{- if include "redis.enabled" . }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -6,7 +6,7 @@ metadata:
   namespace: {{ .Values.namespace }}
 spec:
   serviceName: "redis"
-  replicas: {{ .Values.redis.replicas }}
+  replicas: {{ include "redis.replicas" . }}
   selector:
     matchLabels:
       app: redis
@@ -17,25 +17,28 @@ spec:
     spec:
       containers:
       - name: redis
-        image: {{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}
+        image: {{ include "redis.image.repository" . }}:{{ include "redis.image.tag" . }}
+        imagePullPolicy: {{ include "redis.image.pullPolicy" . }}
         args:
         - redis-server
         - --appendonly
-        - {{ .Values.redis.appendOnly | quote }}
+        - {{ .Values.redis.appendOnly | default "yes" | quote }}
         - --maxmemory
-        - {{ .Values.redis.maxMemory | quote }}
+        - {{ .Values.redis.maxMemory | default "256mb" | quote }}
         - --maxmemory-policy
-        - {{ .Values.redis.maxMemoryPolicy | quote }}
+        - {{ .Values.redis.maxMemoryPolicy | default "allkeys-lru" | quote }}
         ports:
-        - containerPort: {{ .Values.redis.port }}
+        - containerPort: {{ include "redis.port" . }}
         volumeMounts:
         - name: redis-data
           mountPath: /data
+        {{- with .Values.redis.resources }}
         resources:
-          {{- toYaml .Values.redis.resources | nindent 10 }}
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
         livenessProbe:
           tcpSocket:
-            port: {{ .Values.redis.port }}
+            port: {{ include "redis.port" . }}
           initialDelaySeconds: 30
           periodSeconds: 10
         readinessProbe:
@@ -49,9 +52,9 @@ spec:
   - metadata:
       name: redis-data
     spec:
-      storageClassName: {{ .Values.redis.storageClass }}
+      storageClassName: {{ include "redis.storage.storageClassName" . }}
       accessModes: ["ReadWriteOnce"]
       resources:
         requests:
-          storage: {{ .Values.redis.storage }}
+          storage: {{ include "redis.storage.size" . }}
 {{- end }}

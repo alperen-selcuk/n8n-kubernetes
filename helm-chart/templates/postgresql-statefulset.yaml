@@ -1,4 +1,4 @@
-{{- if .Values.postgresql.enabled }}
+{{- if include "postgresql.enabled" . }}
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -6,7 +6,7 @@ metadata:
   namespace: {{ .Values.namespace }}
 spec:
   serviceName: postgres
-  replicas: {{ .Values.postgresql.replicas }}
+  replicas: {{ include "postgresql.replicas" . }}
   selector:
     matchLabels:
       app: postgres
@@ -33,10 +33,10 @@ spec:
             privileged: true
       containers:
         - name: postgres
-          image: {{ .Values.postgresql.image.repository }}:{{ .Values.postgresql.image.tag }}
-          imagePullPolicy: {{ .Values.postgresql.image.pullPolicy }}
+          image: {{ include "postgresql.image.repository" . }}:{{ include "postgresql.image.tag" . }}
+          imagePullPolicy: {{ include "postgresql.image.pullPolicy" . }}
           ports:
-            - containerPort: {{ .Values.postgresql.port }}
+            - containerPort: {{ include "postgresql.port" . }}
           env:
             - name: PGDATA
               value: "/var/lib/postgresql/data/pgdata"
@@ -56,9 +56,9 @@ spec:
       labels:
         app: postgres
     spec:
-      storageClassName: {{ .Values.postgresql.storageClass }}
+      storageClassName: {{ include "postgresql.storage.storageClassName" . }}
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
-          storage: {{ .Values.postgresql.storage }}
+          storage: {{ include "postgresql.storage.size" . }}
 {{- end }}

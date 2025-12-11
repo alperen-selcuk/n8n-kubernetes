@@ -1,11 +1,11 @@
-{{- if .Values.n8n.worker.enabled }}
+{{- if include "n8n.worker.enabled" . }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: n8n-worker
   namespace: {{ .Values.namespace }}
 spec:
-  replicas: {{ .Values.n8n.worker.replicas }}
+  replicas: {{ include "n8n.worker.replicas" . }}
   selector:
     matchLabels:
       app: n8n-worker
@@ -16,18 +16,42 @@ spec:
     spec:
       containers:
       - name: n8n-worker
-        image: {{ .Values.n8n.image.repository }}:{{ .Values.n8n.image.tag }}
-        imagePullPolicy: {{ .Values.n8n.image.pullPolicy }}
+        image: {{ include "n8n.image.repository" . }}:{{ include "n8n.image.tag" . }}
+        imagePullPolicy: {{ include "n8n.image.pullPolicy" . }}
         command: ["n8n", "worker"]
         envFrom:
         - configMapRef:
             name: n8n-config
         - secretRef:
             name: n8n-secret
+        {{- with .Values.n8n.worker.resources }}
         resources:
-          {{- toYaml .Values.n8n.worker.resources | nindent 10 }}
+          {{- toYaml . | nindent 10 }}
+        {{- end }}
+        {{- if .Values.n8n.worker.livenessProbe }}
         livenessProbe:
           {{- toYaml .Values.n8n.worker.livenessProbe | nindent 10 }}
+        {{- else }}
+        livenessProbe:
+          exec:
+            command:
+              - "sh"
+              - "-c"
+              - "ps aux | grep 'n8n worker' | grep -v grep"
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        {{- end }}
+        {{- if .Values.n8n.worker.readinessProbe }}
         readinessProbe:
           {{- toYaml .Values.n8n.worker.readinessProbe | nindent 10 }}
+        {{- else }}
+        readinessProbe:
+          exec:
+            command:
+              - "sh"
+              - "-c"
+              - "ps aux | grep 'n8n worker' | grep -v grep"
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        {{- end }}
 {{- end }}

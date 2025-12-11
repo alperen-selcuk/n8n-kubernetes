@@ -1,4 +1,4 @@
-{{- if .Values.redis.enabled }}
+{{- if include "redis.enabled" . }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -12,6 +12,6 @@ spec:
     app: redis
   ports:
   - name: redis
-    port: {{ .Values.redis.port }}
-    targetPort: {{ .Values.redis.port }}
+    port: {{ include "redis.port" . }}
+    targetPort: {{ include "redis.port" . }}
 {{- end }}

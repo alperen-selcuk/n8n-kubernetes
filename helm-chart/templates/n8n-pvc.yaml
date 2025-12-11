@@ -1,4 +1,4 @@
-{{- if .Values.n8n.main.enabled }}
+{{- if include "n8n.main.enabled" . }}
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -7,8 +7,8 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: {{ .Values.n8n.main.storageClass }}
+  storageClassName: {{ include "n8n.main.storageClass" . }}
   resources:
     requests:
-      storage: {{ .Values.n8n.main.storage }}
+      storage: {{ include "n8n.main.storage" . }}
 {{- end }}

@@ -7,11 +7,15 @@ metadata:
     {{- include "n8n.labels" . | nindent 4 }}
 spec:
   accessModes:
+    {{- if .Values.backup.storage.persistentVolume.accessModes }}
     {{- toYaml .Values.backup.storage.persistentVolume.accessModes | nindent 4 }}
+    {{- else }}
+    - ReadWriteOnce
+    {{- end }}
   resources:
     requests:
-      storage: {{ .Values.backup.storage.persistentVolume.size }}
-  {{- if .Values.backup.storage.persistentVolume.storageClassName }}
-  storageClassName: {{ .Values.backup.storage.persistentVolume.storageClassName }}
+      storage: {{ include "backup.storage.pv.size" . }}
+  {{- if include "backup.storage.pv.storageClassName" . }}
+  storageClassName: {{ include "backup.storage.pv.storageClassName" . }}
   {{- end }}
 {{- end }}

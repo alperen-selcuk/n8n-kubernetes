@@ -1,4 +1,4 @@
-{{- if .Values.postgresql.enabled }}
+{{- if include "postgresql.enabled" . }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -9,6 +9,6 @@ spec:
     app: postgres
   ports:
     - protocol: TCP
-      port: {{ .Values.postgresql.port }}
-      targetPort: {{ .Values.postgresql.port }}
+      port: {{ include "postgresql.port" . }}
+      targetPort: {{ include "postgresql.port" . }}
 {{- end }}
