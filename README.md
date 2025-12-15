@@ -375,7 +375,7 @@ kubectl apply -f n8n/n8n-worker-hpa.yaml
 |----------|-------|-------------|
 | **DB_TYPE** | postgresdb | Database type |
 | **EXECUTIONS_MODE** | queue | Queue-based execution (enables worker support) |
-| **N8N_HOST** | n8n-test.app.setur.software | Domain where n8n will be served |
+| **N8N_HOST** | n8n.example.com | Domain where n8n will be served |
 | **N8N_PROTOCOL** | https | Protocol (https/http) |
 | **N8N_SECURE_COOKIE** | true | Enable secure cookies |
 | **GENERIC_TIMEZONE** | Europe/Istanbul | Timezone setting |
