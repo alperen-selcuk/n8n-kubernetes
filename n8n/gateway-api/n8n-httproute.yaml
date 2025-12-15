@@ -5,7 +5,7 @@ metadata:
   namespace: n8n
 spec:
   hostnames:
-    - n8n-test.app.setur.software
+    - n8n.example.com
   parentRefs:
     - group: gateway.networking.k8s.io
       kind: Gateway
