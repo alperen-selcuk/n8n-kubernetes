@@ -32,7 +32,7 @@ spec:
             privileged: true
       containers:
         - name: postgres
-          image: postgres:latest
+          image: postgres:18.7
           imagePullPolicy: "IfNotPresent"
           ports:
             - containerPort: 5432

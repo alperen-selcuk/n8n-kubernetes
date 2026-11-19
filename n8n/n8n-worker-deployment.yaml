@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: n8n-worker
-        image: docker.n8n.io/n8nio/n8n:latest
+        image: docker.n8n.io/n8nio/n8n:2.48.6
         command: ["n8n", "worker"]
         envFrom:
         - configMapRef:

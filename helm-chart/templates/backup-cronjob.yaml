@@ -24,7 +24,7 @@ spec:
                   echo "Starting backup to ${BACKUP_FILE}..."
                   
                   # Install necessary tools
-                  apk add --no-cache postgresql-client gzip
+                  apk add --no-cache gzip
                   
                   # Dump and compress the database
                   pg_dump -h postgresql -U postgres -d n8n -F c -b -v | gzip > ${BACKUP_FILE}

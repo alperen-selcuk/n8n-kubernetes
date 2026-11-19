@@ -165,9 +165,9 @@ backup:
 
 Chart, aşağıdaki default değerlerle gelir (values.yaml'da belirtmenize gerek yoktur):
 
-- **N8N Image**: `n8nio/n8n:latest`
-- **PostgreSQL**: Version 13, 5Gi storage
-- **Redis**: Version 6.2, 1Gi storage
+- **N8N Image**: `n8nio/n8n:2.48.6`
+- **PostgreSQL**: Version 18.7, 5Gi storage
+- **Redis**: Version 8.10.3 (alpine), 1Gi storage
 - **N8N Main**: 1 replica, 5Gi storage
 - **N8N Worker**: 1 replica
 - **Service Type**: ClusterIP

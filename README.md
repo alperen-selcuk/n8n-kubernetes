@@ -142,18 +142,18 @@ The following table lists the configurable parameters of the n8n chart and their
 | `namespace` | The namespace to deploy all resources into. | `n8n` |
 | `postgresql.enabled` | Enable PostgreSQL deployment. | `true` |
 | `postgresql.image.repository` | PostgreSQL image repository. | `postgres` |
-| `postgresql.image.tag` | PostgreSQL image tag. | `latest` |
+| `postgresql.image.tag` | PostgreSQL image tag. | `18.7` |
 | `postgresql.database` | PostgreSQL database name. | `n8n` |
 | `postgresql.username` | PostgreSQL username. | `n8n` |
 | `postgresql.password` | PostgreSQL password. | `PasdN1831c!*n` |
 | `postgresql.storage` | Persistent storage size for PostgreSQL. | `10Gi` |
 | `redis.enabled` | Enable Redis deployment. | `true` |
 | `redis.image.repository` | Redis image repository. | `redis` |
-| `redis.image.tag` | Redis image tag. | `7-alpine` |
+| `redis.image.tag` | Redis image tag. | `8.10.3-alpine` |
 | `redis.maxMemory` | Redis max memory. | `512mb` |
 | `redis.storage` | Persistent storage size for Redis. | `2Gi` |
 | `n8n.image.repository` | n8n image repository. | `docker.n8n.io/n8nio/n8n` |
-| `n8n.image.tag` | n8n image tag. | `latest` |
+| `n8n.image.tag` | n8n image tag. | `2.48.6` |
 | `n8n.main.enabled` | Enable the main n8n instance. | `true` |
 | `n8n.main.replicas` | Number of replicas for the main instance. | `1` |
 | `n8n.main.storage` | Persistent storage size for the main instance. | `10Gi` |
@@ -523,5 +523,5 @@ Contributions are welcome! Please feel free to submit pull requests or open issu
 
 ---
 
-**Last Updated:** December 2025 | **Version:** 1.0
+**Last Updated:** November 2026 | **Version:** 1.1
 

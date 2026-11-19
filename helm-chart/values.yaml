@@ -10,7 +10,7 @@ redis:
   enabled: true
   image:
     repository: redis
-    tag: "6.2"
+    tag: "8.10.3-alpine"
     pullPolicy: IfNotPresent
   replicas: 1
   port: 6379
@@ -23,7 +23,7 @@ postgresql:
   enabled: true
   image:
     repository: postgres
-    tag: "13"
+    tag: "18.7"
     pullPolicy: IfNotPresent
   auth:
     username: "n8n"
@@ -39,7 +39,7 @@ postgresql:
 n8n:
   image:
     repository: n8nio/n8n
-    tag: "latest"
+    tag: "2.48.6"
     pullPolicy: IfNotPresent
   
   secret:

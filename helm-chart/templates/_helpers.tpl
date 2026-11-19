@@ -41,7 +41,7 @@ N8N Image Configuration
 {{- end }}
 
 {{- define "n8n.image.tag" -}}
-{{- .Values.n8n.image.tag | default "latest" }}
+{{- .Values.n8n.image.tag | default "2.48.6" }}
 {{- end }}
 
 {{- define "n8n.image.pullPolicy" -}}
@@ -56,7 +56,7 @@ PostgreSQL Configuration
 {{- end }}
 
 {{- define "postgresql.image.tag" -}}
-{{- .Values.postgresql.image.tag | default "13" }}
+{{- .Values.postgresql.image.tag | default "18.7" }}
 {{- end }}
 
 {{- define "postgresql.image.pullPolicy" -}}
@@ -91,7 +91,7 @@ Redis Configuration
 {{- end }}
 
 {{- define "redis.image.tag" -}}
-{{- .Values.redis.image.tag | default "6.2" }}
+{{- .Values.redis.image.tag | default "8.10.3-alpine" }}
 {{- end }}
 
 {{- define "redis.image.pullPolicy" -}}
@@ -250,11 +250,11 @@ Backup Configuration
 {{- end }}
 
 {{- define "backup.image.repository" -}}
-{{- .Values.backup.image.repository | default "alpine/k8s" }}
+{{- .Values.backup.image.repository | default "postgres" }}
 {{- end }}
 
 {{- define "backup.image.tag" -}}
-{{- .Values.backup.image.tag | default "1.23.12" }}
+{{- .Values.backup.image.tag | default "18.7-alpine" }}
 {{- end }}
 
 {{- define "backup.image.pullPolicy" -}}
